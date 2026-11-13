@@ -4,126 +4,127 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mundo dos Laços</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
 body {
-    font-family: Arial, sans-serif;
-    background: #faf9f7;
-    color: #514943;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fffaf8;
+  color: #55433f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
-
-header {
-    background: white;
-    padding: 25px 20px;
-    border-bottom: 1px solid #eee5df;
-}
-
-.logo {
-    font-family: Georgia, serif;
-    font-size: 27px;
-    color: #9b796d;
-    letter-spacing: 2px;
-}
-
-.subtitle {
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: #b99c8d;
-    margin-top: 7px;
-}
-
-.container {
-    padding: 25px 18px;
-    max-width: 1100px;
-    margin: auto;
-}
-
-h1 {
-    font-family: Georgia, serif;
-    font-size: 27px;
-    font-weight: normal;
-    margin-bottom: 8px;
-}
-
-.welcome {
-    color: #9b918b;
-    margin-bottom: 25px;
-    font-size: 14px;
-}
-
-.cards {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 13px;
-}
-
 .card {
-    background: white;
-    padding: 22px 15px;
-    border: 1px solid #eee6e0;
-    border-radius: 9px;
-    min-height: 115px;
+  background: white;
+  padding: 35px 25px;
+  border-radius: 18px;
+  box-shadow: 0 4px 25px #00000012;
+  width: 85%;
+  max-width: 360px;
+  text-align: center;
 }
-
-.card span {
-    font-size: 12px;
-    color: #9b918b;
+h1 { font-size: 27px; color: #9c7770; }
+p { color: #9b8580; }
+input, button {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 14px;
+  margin-top: 13px;
+  border-radius: 9px;
+  font-size: 15px;
 }
-
-.card h2 {
-    font-family: Georgia, serif;
-    color: #9b796d;
-    font-size: 25px;
-    margin-top: 13px;
+input { border: 1px solid #e8d9d4; }
+button {
+  border: none;
+  background: #b9948b;
+  color: white;
+  font-weight: bold;
 }
-
-.section-title {
-    font-family: Georgia, serif;
-    font-size: 21px;
-    margin: 30px 0 15px;
-}
-
-.menu {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-}
-
-.menu a {
-    background: white;
-    border: 1px solid #eee6e0;
-    border-radius: 8px;
-    padding: 19px 12px;
-    color: #79665c;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.menu a:hover {
-    background: #f5eee9;
-}
-
-footer {
-    text-align: center;
-    padding: 35px 10px;
-    color: #b09b90;
-    font-size: 11px;
-    letter-spacing: 2px;
-}
-
-@media (min-width: 700px) {
-    .cards {
-        grid-template-columns: repeat(4, 1fr);
-    }
-    .menu {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
+#painel { display: none; }
+#mensagem { font-size: 13px; margin-top: 15px; }
 </style>
 </head>
+
+<body>
+
+<div class="card" id="login">
+  <h1>Mundo dos Laços</h1>
+  <p>Bem-vinda ao seu espaço de gestão!</p>
+
+  <input id="email" type="email"
+  placeholder="Seu e-mail"
+  value="Ranifofura@gmail.com">
+
+  <input id="senha" type="password"
+  placeholder="Sua senha">
+
+  <button onclick="entrar()">Entrar</button>
+  <div id="mensagem"></div>
+</div>
+
+<div class="card" id="painel">
+  <h1>Mundo dos Laços</h1>
+  <p>Login realizado com sucesso! ❤️</p>
+  <h3>Seu painel administrativo</h3>
+  <p>Estamos preparando seu sistema.</p>
+  <button onclick="sair()">Sair</button>
+</div>
+
+<script>
+const SUPABASE_URL = "https://pwtqvmazhtvokxredodz.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_Lmz2WWP2qofJ0PTV7R77rw_CuRUHAfM";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+async function entrar() {
+  const email = document.getElementById("email").value.trim();
+  const senha = document.getElementById("senha").value;
+  const mensagem = document.getElementById("mensagem");
+
+  mensagem.textContent = "Verificando acesso...";
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password: senha
+  });
+
+  if (error) {
+    mensagem.textContent = "Não foi possível entrar. Confira seu e-mail e senha.";
+    return;
+  }
+
+  mostrarPainel();
+}
+
+function mostrarPainel() {
+  document.getElementById("login").style.display = "none";
+  document.getElementById("painel").style.display = "block";
+}
+
+async function sair() {
+  await supabaseClient.auth.signOut();
+  document.getElementById("painel").style.display = "none";
+  document.getElementById("login").style.display = "block";
+  document.getElementById("senha").value = "";
+}
+
+async function verificarAcesso() {
+  const { data } = await supabaseClient.auth.getSession();
+
+  if (data.session) {
+    mostrarPainel();
+  }
+}
+
+verificarAcesso();
+</script>
+
+</body>
+</html>
