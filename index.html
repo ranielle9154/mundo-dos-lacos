@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mundo dos Laços</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fffaf8;
+  color: #55433f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.card {
+  background: white;
+  padding: 35px 25px;
+  border-radius: 18px;
+  box-shadow: 0 4px 25px #00000012;
+  width: 85%;
+  max-width: 360px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 27px;
+  color: #9c7770;
+}
+
+p {
+  color: #9b8580;
+}
+
+input, button {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 14px;
+  margin-top: 13px;
+  border-radius: 9px;
+  font-size: 15px;
+}
+
+input {
+  border: 1px solid #e8d9d4;
+}
+
+button {
+  border: none;
+  background: #b9948b;
+  color: white;
+  font-weight: bold;
+}
+
+#painel {
+  display: none;
+}
+
+#mensagem {
+  font-size: 13px;
+  margin-top: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card" id="login">
+  <h1>Mundo dos Laços</h1>
+  <p>Bem-vinda ao seu espaço de gestão!</p>
+
+  <input
+    id="email"
+    type="email"
+    placeholder="Seu e-mail"
+    value="Ranifofura@gmail.com"
+  >
+
+  <input
+    id="senha"
+    type="password"
+    placeholder="Sua senha"
+  >
+
+  <button onclick="entrar()">Entrar</button>
+
+  <div id="mensagem"></div>
+</div>
+
+<div class="card" id="painel">
+  <h1>Mundo dos Laços</h1>
+  <p>Login realizado com sucesso! ❤️</p>
+  <h3>Seu painel administrativo</h3>
+  <p>Estamos preparando seu sistema.</p>
+  <button onclick="sair()">Sair</button>
+</div>
+
+<script>
+const SUPABASE_URL =
+"https://pwtqvmazhtvokxredodz.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_Lmz2WWP2qofJ0PTV7R77rw_CuRUHAfM";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+async function entrar() {
+  const email = document.getElementById("email").value.trim();
+  const senha = document.getElementById("senha").value;
+  const mensagem = document.getElementById("mensagem");
+
+  mensagem.textContent = "Verificando acesso...";
+
+  const { data, error } =
+    await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: senha
+    });
+
+  if (error) {
+    mensagem.textContent =
+      "Não foi possível entrar. Confira seu e-mail e senha.";
+    return;
+  }
+
+  mostrarPainel();
+}
+
+function mostrarPainel() {
+  document.getElementById("login").style.display = "none";
+  document.getElementById("painel").style.display = "block";
+}
+
+async function sair() {
+  await supabaseClient.auth.signOut();
+
+  document.getElementById("painel").style.display = "none";
+  document.getElementById("login").style.display = "block";
+  document.getElementById("senha").value = "";
+}
+
+async function verificarAcesso() {
+  const { data } = await supabaseClient.auth.getSession();
+
+  if (data.session) {
+    mostrarPainel();
+  }
+}
+
+verificarAcesso();
+</script>
+
+</body>
+</html>
