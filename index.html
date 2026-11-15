@@ -63,7 +63,6 @@ button:hover { background: #9f776e; }
 .msg { margin-top: 10px; font-size: 14px; font-weight: bold; color: #769389; }
 .msg.erro { color: #c95b5b; }
 
-/* Navegação por Abas */
 .nav-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -86,7 +85,6 @@ button:hover { background: #9f776e; }
 .aba { display: none; }
 .aba.ativa { display: block; }
 
-/* Grids e Tabelas */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 @media (max-width: 650px) {
@@ -156,8 +154,8 @@ th { color: #9b7770; background: #fcf7f5; }
   <h2>Bem-vinda!</h2>
   <p>Entre para acessar seu sistema.</p>
   <input id="email" type="email" placeholder="Seu e-mail" value="Ranifofura@gmail.com">
-  <input id="senha" type="password" placeholder="Sua senha">
-  <button onclick="entrar()">Entrar</button>
+  <input id="senha" type="password" placeholder="Sua senha" onkeydown="if(event.key==='Enter') entrar()">
+  <button id="btnEntrar" onclick="entrar()">Entrar</button>
   <div id="mensagem" class="msg"></div>
 </div>
 
@@ -180,11 +178,8 @@ th { color: #9b7770; background: #fcf7f5; }
     <button class="tab-btn" onclick="abrirAba('aba-vendas', this)">🛍️ Vendas & Clientes</button>
   </div>
 
-  <!-- ========================================================= -->
-  <!-- ABA 1: NOTAS DE COMPRA & ESTOQUE DE MATERIAIS             -->
-  <!-- ========================================================= -->
+  <!-- ABA 1: NOTAS DE COMPRA & ESTOQUE DE MATERIAIS -->
   <div id="aba-compras" class="aba ativa">
-
     <div class="card">
       <h2>🧾 Lançar Nota de Compra de Material</h2>
       <p style="font-size: 13px; color: #8c756e;">Ao lançar uma nota, o sistema soma a quantidade no estoque e atualiza o custo unitário automaticamente.</p>
@@ -267,12 +262,9 @@ th { color: #9b7770; background: #fcf7f5; }
         </table>
       </div>
     </div>
-
   </div>
 
-  <!-- ========================================================= -->
-  <!-- ABA 2: PRECIFICAÇÃO DE LAÇOS (FICHA TÉCNICA)              -->
-  <!-- ========================================================= -->
+  <!-- ABA 2: PRECIFICAÇÃO DE LAÇOS -->
   <div id="aba-precificacao" class="aba">
     <div class="card">
       <h2>🧮 Precificar e Cadastrar Novo Laço</h2>
@@ -327,3 +319,10 @@ th { color: #9b7770; background: #fcf7f5; }
 
       <div class="resumo-box">
         <div class="resumo-linha">
+          <span>Custo dos Materiais:</span>
+          <strong id="resumoCustoMat">R$ 0,00</strong>
+        </div>
+        <div class="resumo-linha">
+          <span>Custo Total de Produção (Mat. + Mão de Obra + Emb.):</span>
+          <strong id="resumoCustoTotal">R$ 0,00</strong>
+        </div>
