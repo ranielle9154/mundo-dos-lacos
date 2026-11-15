@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mundo dos Laços</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>Mundo dos Laços — Gestão</title>
+<script src="https://jsdelivr.net"></script>
 
 <style>
 * { box-sizing: border-box; }
@@ -16,269 +16,314 @@ body {
 }
 header {
   background: white;
-  padding: 22px;
+  padding: 20px;
   text-align: center;
   border-bottom: 1px solid #eee1dc;
 }
-header h1 { color: #a47d73; margin: 0; }
+header h1 { color: #a47d73; margin: 0; font-size: 26px; }
+header p { margin: 5px 0 0; font-size: 14px; color: #8c756e; }
 main {
-  max-width: 850px;
-  margin: 25px auto;
+  max-width: 960px;
+  margin: 20px auto;
   padding: 15px;
 }
 .card {
   background: white;
-  padding: 22px;
+  padding: 20px;
   border-radius: 15px;
   box-shadow: 0 3px 15px #0000000c;
   margin-bottom: 20px;
 }
-input, select, button {
+h2, h3 { color: #8c665d; margin-top: 0; }
+input, select, textarea, button {
   width: 100%;
-  padding: 13px;
-  margin: 7px 0;
+  padding: 12px;
+  margin: 6px 0;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 14px;
+  font-family: inherit;
 }
-input, select { border: 1px solid #e5d7d1; }
+input, select, textarea { border: 1px solid #e5d7d1; background: #fff; color: #594943; }
 button {
   border: none;
   background: #b9948b;
   color: white;
   font-weight: bold;
   cursor: pointer;
+  transition: 0.2s;
 }
 button:hover { background: #9f776e; }
+.secundario { background: #8eaaa0; }
+.secundario:hover { background: #769389; }
+.perigo { background: #d47a7a; width: auto; padding: 6px 12px; font-size: 12px; }
+.perigo:hover { background: #b85d5d; }
+.pequeno { width: auto; padding: 7px 12px; font-size: 13px; margin: 2px; }
+
 #painel { display: none; }
-#mensagem { margin-top: 12px; font-size: 14px; }
-table { width: 100%; border-collapse: collapse; }
+.msg { margin-top: 10px; font-size: 14px; font-weight: bold; color: #769389; }
+.msg.erro { color: #c95b5b; }
+
+/* Navegação por Abas */
+.nav-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.tab-btn {
+  flex: 1;
+  min-width: 140px;
+  background: #f3e8e4;
+  color: #7c5c54;
+  padding: 12px;
+  border-radius: 10px;
+  margin: 0;
+}
+.tab-btn.ativo {
+  background: #b9948b;
+  color: white;
+}
+.aba { display: none; }
+.aba.ativa { display: block; }
+
+/* Grids e Tabelas */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+@media (max-width: 650px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 th, td {
-  padding: 11px 7px;
+  padding: 10px 8px;
   border-bottom: 1px solid #eee1dc;
   text-align: left;
   font-size: 14px;
 }
-th { color: #9b7770; }
+th { color: #9b7770; background: #fcf7f5; }
 .tabela { overflow-x: auto; }
-.secundario { background: #8eaaa0; }
+
+.resumo-box {
+  background: #fcf7f5;
+  border: 1px solid #eee1dc;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 12px 0;
+}
+.resumo-linha {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+  font-size: 15px;
+}
+.resumo-destaque {
+  font-size: 18px;
+  font-weight: bold;
+  color: #769389;
+  border-top: 1px dashed #d8c5be;
+  padding-top: 8px;
+  margin-top: 8px;
+}
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.badge {
+  background: #eee1dc;
+  color: #6d4f48;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>Mundo dos Laços</h1>
-  <p>Seu espaço de gestão</p>
+  <h1>🎀 Mundo dos Laços</h1>
+  <p>Gestão de Materiais, Precificação, Estoque e Vendas</p>
 </header>
 
 <main>
 
+<!-- TELA DE LOGIN -->
 <div class="card" id="login">
   <h2>Bem-vinda!</h2>
   <p>Entre para acessar seu sistema.</p>
-  <input id="email" type="email" placeholder="Seu e-mail"
-    value="Ranifofura@gmail.com">
+  <input id="email" type="email" placeholder="Seu e-mail" value="Ranifofura@gmail.com">
   <input id="senha" type="password" placeholder="Sua senha">
   <button onclick="entrar()">Entrar</button>
-  <div id="mensagem"></div>
+  <div id="mensagem" class="msg"></div>
 </div>
 
+<!-- PAINEL PRINCIPAL -->
 <div id="painel">
 
-  <div class="card">
-    <h2>Olá! ❤️</h2>
-    <p>Bem-vinda ao painel do Mundo dos Laços.</p>
-    <button class="secundario" onclick="sair()">Sair</button>
-  </div>
-
-  <div class="card">
-    <h2>Cadastro de materiais</h2>
-
-    <input id="nome" placeholder="Nome do material">
-
-    <select id="unidade">
-      <option value="">Selecione a unidade</option>
-      <option value="metro">Metro</option>
-      <option value="unidade">Unidade</option>
-      <option value="pacote">Pacote</option>
-      <option value="rolo">Rolo</option>
-      <option value="par">Par</option>
-    </select>
-
-    <input id="quantidade" type="number" min="0" step="0.01"
-      placeholder="Quantidade em estoque">
-
-    <input id="custo" type="number" min="0" step="0.01"
-      placeholder="Custo por unidade (R$)">
-
-    <button onclick="cadastrarMaterial()">Salvar material</button>
-    <div id="mensagemMaterial"></div>
-  </div>
-
-  <div class="card">
-    <h2>Meu estoque de materiais</h2>
-    <button class="secundario" onclick="carregarMateriais()">
-      Atualizar estoque
-    </button>
-    <div class="tabela">
-      <table>
-        <thead>
-          <tr>
-            <th>Material</th>
-            <th>Unidade</th>
-            <th>Quantidade</th>
-            <th>Custo unitário</th>
-          </tr>
-        </thead>
-        <tbody id="listaMateriais"></tbody>
-      </table>
+  <div class="card top-bar">
+    <div>
+      <strong>Olá, Rani! ❤️</strong>
+      <div style="font-size: 13px; color: #8c756e;">Painel Administrativo Mundo dos Laços</div>
     </div>
+    <button class="secundario pequeno" onclick="sair()">Sair</button>
   </div>
 
-</div>
-</main>
+  <!-- MENU DE ABAS -->
+  <div class="nav-tabs">
+    <button class="tab-btn ativo" onclick="abrirAba('aba-compras', this)">🧾 Notas & Materiais</button>
+    <button class="tab-btn" onclick="abrirAba('aba-precificacao', this)">🧮 Precificar Laço</button>
+    <button class="tab-btn" onclick="abrirAba('aba-produtos', this)">🎀 Estoque & Produção</button>
+    <button class="tab-btn" onclick="abrirAba('aba-vendas', this)">🛍️ Vendas & Clientes</button>
+  </div>
 
-<script>
-const SUPABASE_URL = "https://pwtqvmazhtvokxredodz.supabase.co";
-const SUPABASE_KEY = "sb_publishable_Lmz2WWP2qofJ0PTV7R77rw_CuRUHAfM";
+  <!-- ========================================================= -->
+  <!-- ABA 1: NOTAS DE COMPRA & ESTOQUE DE MATERIAIS             -->
+  <!-- ========================================================= -->
+  <div id="aba-compras" class="aba ativa">
 
-const banco = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+    <div class="card">
+      <h2>🧾 Lançar Nota de Compra de Material</h2>
+      <p style="font-size: 13px; color: #8c756e;">Ao lançar uma nota, o sistema soma a quantidade no estoque e atualiza o custo unitário automaticamente.</p>
+      
+      <div class="grid-3">
+        <input id="notaFornecedor" placeholder="Fornecedor / Loja">
+        <input id="notaNumero" placeholder="Nº da Nota (opcional)">
+        <input id="notaData" type="date">
+      </div>
 
-async function entrar() {
-  const email = document.getElementById("email").value.trim();
-  const senha = document.getElementById("senha").value;
-  const msg = document.getElementById("mensagem");
+      <div class="grid-3">
+        <select id="notaMaterialSelect">
+          <option value="">Selecione o material...</option>
+        </select>
+        <input id="notaQtd" type="number" min="0.01" step="0.01" placeholder="Quantidade comprada">
+        <input id="notaValorTotal" type="number" min="0.01" step="0.01" placeholder="Valor total pago (R$)">
+      </div>
 
-  msg.textContent = "Verificando acesso...";
+      <button onclick="registrarNotaCompra()">Registrar Nota e Atualizar Estoque</button>
+      <div id="msgNota" class="msg"></div>
+    </div>
 
-  const { error } = await banco.auth.signInWithPassword({
-    email: email,
-    password: senha
-  });
+    <div class="card">
+      <h2>➕ Cadastrar Novo Tipo de Material</h2>
+      <div class="grid-2">
+        <input id="nome" placeholder="Nome do material (ex: Fita Gorgurão 38mm)">
+        <select id="unidade">
+          <option value="">Selecione a unidade</option>
+          <option value="metro">Metro</option>
+          <option value="unidade">Unidade</option>
+          <option value="pacote">Pacote</option>
+          <option value="rolo">Rolo</option>
+          <option value="par">Par</option>
+        </select>
+      </div>
+      <div class="grid-2">
+        <input id="quantidade" type="number" min="0" step="0.01" placeholder="Estoque inicial (ex: 10)">
+        <input id="custo" type="number" min="0" step="0.01" placeholder="Custo por unidade/metro (R$)">
+      </div>
+      <button class="secundario" onclick="cadastrarMaterial()">Salvar Novo Material</button>
+      <div id="mensagemMaterial" class="msg"></div>
+    </div>
 
-  if (error) {
-    msg.textContent = "Não foi possível entrar. Confira seu e-mail e senha.";
-    return;
-  }
+    <div class="card">
+      <div class="top-bar">
+        <h2>📦 Estoque Atual de Materiais</h2>
+        <button class="secundario pequeno" onclick="carregarMateriais()">Atualizar</button>
+      </div>
+      <div class="tabela">
+        <table>
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Unidade</th>
+              <th>Em Estoque</th>
+              <th>Custo Unitário</th>
+              <th>Valor em Estoque</th>
+            </tr>
+          </thead>
+          <tbody id="listaMateriais"></tbody>
+        </table>
+      </div>
+    </div>
 
-  mostrarPainel();
-}
+    <div class="card">
+      <h2>📋 Últimas Notas de Compra Lançadas</h2>
+      <div class="tabela">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Fornecedor</th>
+              <th>Nota</th>
+              <th>Material</th>
+              <th>Qtd</th>
+              <th>Total Pago</th>
+            </tr>
+          </thead>
+          <tbody id="listaNotas"></tbody>
+        </table>
+      </div>
+    </div>
 
-function mostrarPainel() {
-  document.getElementById("login").style.display = "none";
-  document.getElementById("painel").style.display = "block";
-  carregarMateriais();
-}
+  </div>
 
-async function sair() {
-  await banco.auth.signOut();
-  document.getElementById("painel").style.display = "none";
-  document.getElementById("login").style.display = "block";
-  document.getElementById("senha").value = "";
-}
+  <!-- ========================================================= -->
+  <!-- ABA 2: PRECIFICAÇÃO DE LAÇOS (FICHA TÉCNICA)              -->
+  <!-- ========================================================= -->
+  <div id="aba-precificacao" class="aba">
+    <div class="card">
+      <h2>🧮 Precificar e Cadastrar Novo Laço</h2>
+      
+      <div class="grid-2">
+        <input id="prodNome" placeholder="Nome do Laço (ex: Laço Boutique Luxo)">
+        <input id="prodCategoria" placeholder="Categoria (ex: Escolar, Luxo, RN)">
+      </div>
+      <input id="prodDescricao" placeholder="Descrição / Detalhes (opcional)">
 
-async function cadastrarMaterial() {
-  const nome = document.getElementById("nome").value.trim();
-  const unidade = document.getElementById("unidade").value;
-  const quantidade = Number(document.getElementById("quantidade").value);
-  const custo = Number(document.getElementById("custo").value);
-  const msg = document.getElementById("mensagemMaterial");
+      <h3 style="margin-top: 15px;">1. Materiais usados neste laço</h3>
+      <div class="grid-3">
+        <select id="receitaMaterialSelect">
+          <option value="">Escolha o material...</option>
+        </select>
+        <input id="receitaQtd" type="number" min="0.01" step="0.01" placeholder="Qtd usada (ex: 0.65 para 65cm)">
+        <button class="secundario" type="button" onclick="adicionarItemReceita()">+ Adicionar Material</button>
+      </div>
 
-  if (!nome || !unidade ||
-      document.getElementById("quantidade").value === "" ||
-      document.getElementById("custo").value === "" ||
-      quantidade < 0 || custo < 0) {
-    msg.textContent = "Preencha todos os campos com valores válidos.";
-    return;
-  }
+      <div class="tabela">
+        <table>
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Qtd Usada</th>
+              <th>Custo Unit.</th>
+              <th>Subtotal</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaReceita">
+            <tr><td colspan="5">Nenhum material adicionado ainda.</td></tr>
+          </tbody>
+        </table>
+      </div>
 
-  msg.textContent = "Salvando material...";
+      <h3 style="margin-top: 15px;">2. Custos Extras e Margem de Lucro</h3>
+      <div class="grid-3">
+        <div>
+          <label style="font-size: 12px;">Mão de Obra / Tempo (R$)</label>
+          <input id="custoMaoObra" type="number" min="0" step="0.01" value="0" oninput="recalcularPreco()">
+        </div>
+        <div>
+          <label style="font-size: 12px;">Embalagem / Etiqueta (R$)</label>
+          <input id="custoEmbalagem" type="number" min="0" step="0.01" value="0" oninput="recalcularPreco()">
+        </div>
+        <div>
+          <label style="font-size: 12px;">Margem de Lucro (%)</label>
+          <input id="margemLucro" type="number" min="0" step="1" value="100" oninput="recalcularPreco()">
+        </div>
+      </div>
 
-  const { error } = await banco.from("materials").insert({
-    name: nome,
-    unit: unidade,
-    stock_quantity: quantidade,
-    cost_per_unit: custo
-  });
-
-  if (error) {
-    msg.textContent = "Erro ao salvar: " + error.message;
-    return;
-  }
-
-  msg.textContent = "Material cadastrado com sucesso! ❤️";
-
-  document.getElementById("nome").value = "";
-  document.getElementById("unidade").value = "";
-  document.getElementById("quantidade").value = "";
-  document.getElementById("custo").value = "";
-
-  carregarMateriais();
-}
-
-async function carregarMateriais() {
-  const lista = document.getElementById("listaMateriais");
-  lista.innerHTML = "<tr><td colspan='4'>Carregando...</td></tr>";
-
-  const { data, error } = await banco
-    .from("materials")
-    .select("*")
-    .order("name");
-
-  if (error) {
-    lista.innerHTML =
-      "<tr><td colspan='4'>Erro ao carregar: " +
-      error.message + "</td></tr>";
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    lista.innerHTML =
-      "<tr><td colspan='4'>Nenhum material cadastrado.</td></tr>";
-    return;
-  }
-
-  lista.innerHTML = "";
-
-  data.forEach(material => {
-    const linha = document.createElement("tr");
-
-    const valores = [
-      material.name,
-      material.unit,
-      material.stock_quantity,
-      "R$ " + Number(material.cost_per_unit).toFixed(2)
-    ];
-
-    valores.forEach(valor => {
-      const celula = document.createElement("td");
-      celula.textContent = valor ?? "";
-      linha.appendChild(celula);
-    });
-
-    lista.appendChild(linha);
-  });
-}
-
-banco.auth.onAuthStateChange((evento, sessao) => {
-  if (sessao) {
-    mostrarPainel();
-  }
-});
-
-async function verificarSessao() {
-  const { data } = await banco.auth.getSession();
-
-  if (data.session) {
-    mostrarPainel();
-  }
-}
-
-verificarSessao();
-</script>
-
-</body>
-</html>
+      <div class="resumo-box">
+        <div class="resumo-linha">
