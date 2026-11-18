@@ -1,328 +1,42 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mundo dos Laços — Gestão</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #fffaf8;
-  color: #594943;
-}
-header {
-  background: white;
-  padding: 20px;
-  text-align: center;
-  border-bottom: 1px solid #eee1dc;
-}
-header h1 { color: #a47d73; margin: 0; font-size: 26px; }
-header p { margin: 5px 0 0; font-size: 14px; color: #8c756e; }
-main {
-  max-width: 960px;
-  margin: 20px auto;
-  padding: 15px;
-}
-.card {
-  background: white;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 3px 15px #0000000c;
-  margin-bottom: 20px;
-}
-h2, h3 { color: #8c665d; margin-top: 0; }
-input, select, textarea, button {
-  width: 100%;
-  padding: 12px;
-  margin: 6px 0;
-  border-radius: 8px;
-  font-size: 14px;
-  font-family: inherit;
-}
-input, select, textarea { border: 1px solid #e5d7d1; background: #fff; color: #594943; }
-button {
-  border: none;
-  background: #b9948b;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s;
-}
-button:hover { background: #9f776e; }
-.secundario { background: #8eaaa0; }
-.secundario:hover { background: #769389; }
-.perigo { background: #d47a7a; width: auto; padding: 6px 12px; font-size: 12px; }
-.perigo:hover { background: #b85d5d; }
-.pequeno { width: auto; padding: 7px 12px; font-size: 13px; margin: 2px; }
-
-#painel { display: none; }
-.msg { margin-top: 10px; font-size: 14px; font-weight: bold; color: #769389; }
-.msg.erro { color: #c95b5b; }
-
-.nav-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-.tab-btn {
-  flex: 1;
-  min-width: 140px;
-  background: #f3e8e4;
-  color: #7c5c54;
-  padding: 12px;
-  border-radius: 10px;
-  margin: 0;
-}
-.tab-btn.ativo {
-  background: #b9948b;
-  color: white;
-}
-.aba { display: none; }
-.aba.ativa { display: block; }
-
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-@media (max-width: 650px) {
-  .grid-2, .grid-3 { grid-template-columns: 1fr; }
-}
-
-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-th, td {
-  padding: 10px 8px;
-  border-bottom: 1px solid #eee1dc;
-  text-align: left;
-  font-size: 14px;
-}
-th { color: #9b7770; background: #fcf7f5; }
-.tabela { overflow-x: auto; }
-
-.resumo-box {
-  background: #fcf7f5;
-  border: 1px solid #eee1dc;
-  border-radius: 10px;
-  padding: 15px;
-  margin: 12px 0;
-}
-.resumo-linha {
-  display: flex;
-  justify-content: space-between;
-  margin: 6px 0;
-  font-size: 15px;
-}
-.resumo-destaque {
-  font-size: 18px;
-  font-weight: bold;
-  color: #769389;
-  border-top: 1px dashed #d8c5be;
-  padding-top: 8px;
-  margin-top: 8px;
-}
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.badge {
-  background: #eee1dc;
-  color: #6d4f48;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: bold;
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  <h1>🎀 Mundo dos Laços</h1>
-  <p>Gestão de Materiais, Precificação, Estoque e Vendas</p>
-</header>
-
-<main>
-
-<!-- TELA DE LOGIN -->
-<div class="card" id="login">
-  <h2>Bem-vinda!</h2>
-  <p>Entre para acessar seu sistema.</p>
-  <input id="email" type="email" placeholder="Seu e-mail" value="Ranifofura@gmail.com">
-  <input id="senha" type="password" placeholder="Sua senha" onkeydown="if(event.key==='Enter') entrar()">
-  <button id="btnEntrar" onclick="entrar()">Entrar</button>
-  <div id="mensagem" class="msg"></div>
-</div>
-
-<!-- PAINEL PRINCIPAL -->
-<div id="painel">
-
-  <div class="card top-bar">
-    <div>
-      <strong>Olá, Rani! ❤️</strong>
-      <div style="font-size: 13px; color: #8c756e;">Painel Administrativo Mundo dos Laços</div>
-    </div>
-    <button class="secundario pequeno" onclick="sair()">Sair</button>
-  </div>
-
-  <!-- MENU DE ABAS -->
-  <div class="nav-tabs">
-    <button class="tab-btn ativo" onclick="abrirAba('aba-compras', this)">🧾 Notas & Materiais</button>
-    <button class="tab-btn" onclick="abrirAba('aba-precificacao', this)">🧮 Precificar Laço</button>
-    <button class="tab-btn" onclick="abrirAba('aba-produtos', this)">🎀 Estoque & Produção</button>
-    <button class="tab-btn" onclick="abrirAba('aba-vendas', this)">🛍️ Vendas & Clientes</button>
-  </div>
-
-  <!-- ABA 1: NOTAS DE COMPRA & ESTOQUE DE MATERIAIS -->
-  <div id="aba-compras" class="aba ativa">
-    <div class="card">
-      <h2>🧾 Lançar Nota de Compra de Material</h2>
-      <p style="font-size: 13px; color: #8c756e;">Ao lançar uma nota, o sistema soma a quantidade no estoque e atualiza o custo unitário automaticamente.</p>
-      
-      <div class="grid-3">
-        <input id="notaFornecedor" placeholder="Fornecedor / Loja">
-        <input id="notaNumero" placeholder="Nº da Nota (opcional)">
-        <input id="notaData" type="date">
-      </div>
-
-      <div class="grid-3">
-        <select id="notaMaterialSelect">
-          <option value="">Selecione o material...</option>
-        </select>
-        <input id="notaQtd" type="number" min="0.01" step="0.01" placeholder="Quantidade comprada">
-        <input id="notaValorTotal" type="number" min="0.01" step="0.01" placeholder="Valor total pago (R$)">
-      </div>
-
-      <button onclick="registrarNotaCompra()">Registrar Nota e Atualizar Estoque</button>
-      <div id="msgNota" class="msg"></div>
-    </div>
-
-    <div class="card">
-      <h2>➕ Cadastrar Novo Tipo de Material</h2>
-      <div class="grid-2">
-        <input id="nome" placeholder="Nome do material (ex: Fita Gorgurão 38mm)">
-        <select id="unidade">
-          <option value="">Selecione a unidade</option>
-          <option value="metro">Metro</option>
-          <option value="unidade">Unidade</option>
-          <option value="pacote">Pacote</option>
-          <option value="rolo">Rolo</option>
-          <option value="par">Par</option>
-        </select>
-      </div>
-      <div class="grid-2">
-        <input id="quantidade" type="number" min="0" step="0.01" placeholder="Estoque inicial (ex: 10)">
-        <input id="custo" type="number" min="0" step="0.01" placeholder="Custo por unidade/metro (R$)">
-      </div>
-      <button class="secundario" onclick="cadastrarMaterial()">Salvar Novo Material</button>
-      <div id="mensagemMaterial" class="msg"></div>
-    </div>
-
-    <div class="card">
-      <div class="top-bar">
-        <h2>📦 Estoque Atual de Materiais</h2>
-        <button class="secundario pequeno" onclick="carregarMateriais()">Atualizar</button>
-      </div>
-      <div class="tabela">
-        <table>
-          <thead>
-            <tr>
-              <th>Material</th>
-              <th>Unidade</th>
-              <th>Em Estoque</th>
-              <th>Custo Unitário</th>
-              <th>Valor em Estoque</th>
-            </tr>
-          </thead>
-          <tbody id="listaMateriais"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>📋 Últimas Notas de Compra Lançadas</h2>
-      <div class="tabela">
-        <table>
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Fornecedor</th>
-              <th>Nota</th>
-              <th>Material</th>
-              <th>Qtd</th>
-              <th>Total Pago</th>
-            </tr>
-          </thead>
-          <tbody id="listaNotas"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ABA 2: PRECIFICAÇÃO DE LAÇOS -->
-  <div id="aba-precificacao" class="aba">
-    <div class="card">
-      <h2>🧮 Precificar e Cadastrar Novo Laço</h2>
-      
-      <div class="grid-2">
-        <input id="prodNome" placeholder="Nome do Laço (ex: Laço Boutique Luxo)">
-        <input id="prodCategoria" placeholder="Categoria (ex: Escolar, Luxo, RN)">
-      </div>
-      <input id="prodDescricao" placeholder="Descrição / Detalhes (opcional)">
-
-      <h3 style="margin-top: 15px;">1. Materiais usados neste laço</h3>
-      <div class="grid-3">
-        <select id="receitaMaterialSelect">
-          <option value="">Escolha o material...</option>
-        </select>
-        <input id="receitaQtd" type="number" min="0.01" step="0.01" placeholder="Qtd usada (ex: 0.65 para 65cm)">
-        <button class="secundario" type="button" onclick="adicionarItemReceita()">+ Adicionar Material</button>
-      </div>
-
-      <div class="tabela">
-        <table>
-          <thead>
-            <tr>
-              <th>Material</th>
-              <th>Qtd Usada</th>
-              <th>Custo Unit.</th>
-              <th>Subtotal</th>
-              <th>Ação</th>
-            </tr>
-          </thead>
-          <tbody id="tabelaReceita">
-            <tr><td colspan="5">Nenhum material adicionado ainda.</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3 style="margin-top: 15px;">2. Custos Extras e Margem de Lucro</h3>
-      <div class="grid-3">
-        <div>
-          <label style="font-size: 12px;">Mão de Obra / Tempo (R$)</label>
-          <input id="custoMaoObra" type="number" min="0" step="0.01" value="0" oninput="recalcularPreco()">
-        </div>
-        <div>
-          <label style="font-size: 12px;">Embalagem / Etiqueta (R$)</label>
-          <input id="custoEmbalagem" type="number" min="0" step="0.01" value="0" oninput="recalcularPreco()">
-        </div>
-        <div>
-          <label style="font-size: 12px;">Margem de Lucro (%)</label>
-          <input id="margemLucro" type="number" min="0" step="1" value="100" oninput="recalcularPreco()">
-        </div>
-      </div>
-
-      <div class="resumo-box">
-        <div class="resumo-linha">
-          <span>Custo dos Materiais:</span>
-          <strong id="resumoCustoMat">R$ 0,00</strong>
-        </div>
-        <div class="resumo-linha">
-          <span>Custo Total de Produção (Mat. + Mão de Obra + Emb.):</span>
-          <strong id="resumoCustoTotal">R$ 0,00</strong>
-        </div>
+*{box-sizing:border-box}body{margin:0;background:#fffaf8;color:#594943;font:15px Arial,sans-serif}header{background:#fff;padding:20px;text-align:center;border-bottom:1px solid #eee1dc}header h1{margin:0;color:#a47d73}main{max-width:950px;margin:20px auto;padding:0 14px}.card{background:#fff;padding:18px;border-radius:15px;box-shadow:0 3px 15px #0000000c;margin-bottom:16px}h2{color:#8c665d;margin-top:0}input,select,button{width:100%;padding:13px;margin:7px 0;border-radius:8px;font-size:15px}input,select{border:1px solid #e5d7d1}button{border:0;background:#b9948b;color:white;font-weight:bold}button:disabled{opacity:.6}.msg{padding:8px 0;white-space:normal}.err{color:#bd4545}.ok{color:#477b64}.hidden{display:none!important}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs button{width:auto;flex:1;background:#f3e8e4;color:#7c5c54}.tabs button.active{background:#b9948b;color:white}.tab{display:none}.tab.active{display:block}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:480px}td,th{text-align:left;padding:10px;border-bottom:1px solid #eee1dc}th{color:#9b7770;background:#fcf7f5}.right{display:flex;justify-content:space-between;align-items:center;gap:10px}@media(max-width:600px){.grid{grid-template-columns:1fr}}
+</style></head>
+<body><header><h1>🎀 Mundo dos Laços</h1><p>Gestão de materiais, produtos e vendas</p></header><main>
+<section id="login" class="card"><h2>Bem-vinda!</h2><p>Entre para acessar seu sistema.</p><input id="email" type="email" autocomplete="username" placeholder="Seu e-mail" value="Ranifofura@gmail.com"><input id="senha" type="password" autocomplete="current-password" placeholder="Sua senha"><button id="entrar">Entrar</button><div id="loginMsg" class="msg" role="status"></div></section>
+<section id="app" class="hidden"><div class="card right"><div><b>Painel Administrativo ❤️</b><div id="usuario"></div></div><button id="sair" style="width:auto">Sair</button></div>
+<nav class="tabs"><button class="active" data-tab="materiais">📦 Materiais</button><button data-tab="produtos">🎀 Produtos</button><button data-tab="clientes">👩‍👧 Clientes</button></nav>
+<section id="materiais" class="tab active"><div class="card"><h2>Cadastrar material</h2><div class="grid"><input id="mNome" placeholder="Nome do material"><select id="mUn"><option value="">Unidade</option><option value="metro">Metro</option><option value="unidade">Unidade</option><option value="pacote">Pacote</option><option value="rolo">Rolo</option><option value="par">Par</option></select><input id="mQtd" type="number" min="0" step="0.01" placeholder="Quantidade em estoque"><input id="mCusto" type="number" min="0" step="0.0001" placeholder="Custo por unidade (R$)"></div><button id="salvarM">Salvar material</button><div id="mMsg" class="msg"></div></div><div class="card"><div class="right"><h2>Estoque atual</h2><button id="recarregarM" style="width:auto">Atualizar</button></div><div class="tablewrap"><table><thead><tr><th>Material</th><th>Unidade</th><th>Estoque</th><th>Custo unitário</th><th>Total</th></tr></thead><tbody id="mLista"></tbody></table></div></div></section>
+<section id="produtos" class="tab"><div class="card"><h2>Cadastrar produto</h2><div class="grid"><input id="pNome" placeholder="Nome do laço/tiara/faixinha"><input id="pCat" placeholder="Categoria"><input id="pPreco" type="number" min="0" step="0.01" placeholder="Preço de venda (R$)"><input id="pEstoque" type="number" min="0" step="1" placeholder="Estoque pronto"></div><input id="pFoto" placeholder="Link da foto (opcional)"><input id="pDesc" placeholder="Descrição (opcional)"><button id="salvarP">Salvar produto</button><div id="pMsg" class="msg"></div></div><div class="card"><h2>Produtos cadastrados</h2><div class="tablewrap"><table><thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th></tr></thead><tbody id="pLista"></tbody></table></div></div></section>
+<section id="clientes" class="tab"><div class="card"><h2>Cadastrar cliente</h2><div class="grid"><input id="cNome" placeholder="Nome da cliente"><input id="cFone" placeholder="Telefone / WhatsApp"></div><button id="salvarC">Salvar cliente</button><div id="cMsg" class="msg"></div></div><div class="card"><h2>Clientes</h2><div class="tablewrap"><table><thead><tr><th>Nome</th><th>Telefone</th></tr></thead><tbody id="cLista"></tbody></table></div></div></section>
+</section></main>
+<script>
+(function(){
+const URL="https://pwtqvmazhtvokxredodz.supabase.co";
+const KEY="sb_publishable_Lmz2WWP2PqofJ0PTV7R77rw_CuRUHAfM";
+const $=id=>document.getElementById(id);
+const client=window.supabase.createClient(URL,KEY);
+const brl=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function msg(id,t,bad=false){$(id).textContent=t;$(id).className='msg '+(bad?'err':'ok')}
+async function query(q,id){const {data,error}=await q;if(error){if(id)msg(id,'Não foi possível carregar/salvar: '+error.message,true);console.error(error);return null}return data}
+async function materiais(){const d=await query(client.from('materials').select('id,name,unit,stock,cost_per_unit').order('name'),'mMsg');if(!d)return;$('mLista').innerHTML=d.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+esc(x.unit)+'</td><td>'+Number(x.stock||0)+'</td><td>'+brl(x.cost_per_unit)+'</td><td>'+brl(Number(x.stock||0)*Number(x.cost_per_unit||0))+'</td></tr>').join('')||'<tr><td colspan="5">Nenhum material cadastrado.</td></tr>'}
+async function produtos(){const d=await query(client.from('products').select('id,name,category,sale_price,stock').order('name'),'pMsg');if(!d)return;$('pLista').innerHTML=d.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+esc(x.category)+'</td><td>'+brl(x.sale_price)+'</td><td>'+Number(x.stock||0)+'</td></tr>').join('')||'<tr><td colspan="4">Nenhum produto cadastrado.</td></tr>'}
+async function clientes(){const d=await query(client.from('customers').select('id,name,phone').order('name'),'cMsg');if(!d)return;$('cLista').innerHTML=d.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+esc(x.phone)+'</td></tr>').join('')||'<tr><td colspan="2">Nenhuma cliente cadastrada.</td></tr>'}
+async function painel(session){$('login').classList.add('hidden');$('app').classList.remove('hidden');$('usuario').textContent=session.user.email||'';await Promise.all([materiais(),produtos(),clientes()])}
+$('entrar').addEventListener('click',async()=>{const email=$('email').value.trim(),password=$('senha').value;if(!email||!password){msg('loginMsg','Digite seu e-mail e sua senha.',true);return}$('entrar').disabled=true;$('entrar').textContent='Entrando...';msg('loginMsg','Conectando ao sistema...');try{const {data,error}=await client.auth.signInWithPassword({email,password});if(error)throw error;msg('loginMsg','Acesso autorizado!');await painel(data.session)}catch(e){msg('loginMsg','Não foi possível entrar: '+(e.message||'verifique a conexão e os dados.'),true)}finally{$('entrar').disabled=false;$('entrar').textContent='Entrar'}});
+$('senha').addEventListener('keydown',e=>{if(e.key==='Enter')$('entrar').click()});
+$('sair').addEventListener('click',async()=>{await client.auth.signOut();$('app').classList.add('hidden');$('login').classList.remove('hidden');$('senha').value='';msg('loginMsg','Você saiu do sistema.')});
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.id===b.dataset.tab))}));
+$('salvarM').addEventListener('click',async()=>{const name=$('mNome').value.trim(),unit=$('mUn').value,stock=Number($('mQtd').value),cost_per_unit=Number($('mCusto').value);if(!name||!unit||$('mQtd').value===''||$('mCusto').value===''){msg('mMsg','Preencha todos os campos.',true);return}const d=await query(client.from('materials').insert({name,unit,stock,cost_per_unit}).select(),'mMsg');if(d){msg('mMsg','Material cadastrado!');['mNome','mQtd','mCusto'].forEach(i=>$(i).value='');$('mUn').value='';materiais()}});
+$('recarregarM').addEventListener('click',materiais);
+$('salvarP').addEventListener('click',async()=>{const name=$('pNome').value.trim(),category=$('pCat').value.trim(),sale_price=Number($('pPreco').value),stock=Number($('pEstoque').value||0),image_url=$('pFoto').value.trim()||null,description=$('pDesc').value.trim();if(!name||$('pPreco').value===''){msg('pMsg','Informe nome e preço de venda.',true);return}const d=await query(client.from('products').insert({name,category,sale_price,stock,image_url,description}).select(),'pMsg');if(d){msg('pMsg','Produto cadastrado!');['pNome','pCat','pPreco','pEstoque','pFoto','pDesc'].forEach(i=>$(i).value='');produtos()}});
+$('salvarC').addEventListener('click',async()=>{const name=$('cNome').value.trim(),phone=$('cFone').value.trim();if(!name){msg('cMsg','Informe o nome da cliente.',true);return}const d=await query(client.from('customers').insert({name,phone}).select(),'cMsg');if(d){msg('cMsg','Cliente cadastrada!');$('cNome').value='';$('cFone').value='';clientes()}});
+client.auth.getSession().then(({data,error})=>{if(error){msg('loginMsg','Erro ao verificar sessão: '+error.message,true);return}if(data.session)painel(data.session)}).catch(e=>msg('loginMsg','Falha de conexão: '+e.message,true));
+})();
+</script></body></html>
